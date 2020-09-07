@@ -99,8 +99,12 @@ class HashTable:
 
         Implement this.
         """
-        idx = self.hash_index(key)
-        self.buckets[idx] = value
+        #day 1
+        #idx = self.hash_index(key)
+        #self.buckets[idx] = value
+
+        #day 2
+        
 
 
     def delete(self, key):
