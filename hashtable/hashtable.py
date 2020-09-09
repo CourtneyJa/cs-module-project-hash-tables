@@ -23,6 +23,8 @@ class HashTable:
     """
 
     def __init__(self, capacity):
+        self.capacity = capacity
+        self.size = 0
         if capacity < MIN_CAPACITY:
             self.capacity = MIN_CAPACITY
         else:
@@ -49,7 +51,7 @@ class HashTable:
 
         Implement this.
         """
-        return self.items / self.get_num_slots()
+        return self.size / self.get_num_slots()
 
 
     def fnv1(self, key):
@@ -99,9 +101,28 @@ class HashTable:
 
         Implement this.
         """
-        idx = self.hash_index(key)
-        self.buckets[idx] = value
+        #day1
+        #idx = self.hash_index(key)
+        #self.buckets[idx] = value
 
+        #day2
+        idx = self.hash_index(key)
+        if (self.buckets[idx] == None):
+            self.buckets[idx] = HashTableEntry(key, value)
+            self.size += 1
+        else:
+            cur = self.buckets[idx]
+            while cur.next != None and cur.key != key:
+                cur = cur.next
+            if cur.key == key:
+                cur.value = value
+            else: 
+                new = HashTableEntry(key, value)
+                new.next = self.buckets[idx]
+                self.buckets[idx] = new
+                self.size += 1
+        if self.get_load_factor() > .7:
+            self.resize(self.capacity * 2)
 
     def delete(self, key):
         """
@@ -111,8 +132,40 @@ class HashTable:
 
         Implement this.
         """
+        #day1
+        #idx = self.hash_index(key)
+        #self.buckets[idx] = None
+        #day2
         idx = self.hash_index(key)
-        self.buckets[idx] = None
+        if self.buckets[idx].key == key:
+            if self.buckets[idx].next == None:
+                self.buckets[idx] = None
+                self.size -= 1
+            else:
+                new_head = self.buckets[idx].next
+                self.buckets[idx].next = None
+                self.buckets[idx] = new_head
+                self.size -= 1
+        else:
+            if self.buckets[idx] == None:
+                return None
+            else:
+                cur_val = self.buckets[idx]
+                prev_val == None
+                while cur_val.next is not None and cur_val.key != key:
+                    prev_val = cur_val
+                    cur_val = cur_val.next
+                if cur_val.key == key:
+                    prev_val.next = cur_val.next
+                    self.size -= 1
+                    return cur_val
+                else:
+                    return None
+            if self.get_load_factor() < .2:
+                if self.capacity/2 > MIN_CAPACITY:
+                    self.resize(self.capacity/2)
+                elif self.capacity > MIN_CAPACITY:
+                    self.resize(MIN_CAPACITY)
 
 
     def get(self, key):
@@ -123,9 +176,23 @@ class HashTable:
 
         Implement this.
         """
+        #day1
+        #idx = self.hash_index(key)
+        #value = self.buckets[idx]
+        #return value
+        #day2
         idx = self.hash_index(key)
-        value = self.buckets[idx]
-        return value
+        if self.buckets[idx] is not None and self.buckets[idx].key == key:
+            return self.buckets[idx].value
+        elif self.buckets[idx] is None:
+            return None
+        else:
+            while self.buckets[idx].next != None and self.buckets[idx].key != key:
+                self.buckets[idx] = self.buckets[idx].next
+            if self.buckets[idx] == None:
+                return None
+            else:
+                return self.buckets[idx].value
 
 
     def resize(self, new_capacity):
@@ -135,7 +202,16 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        #day2
+        old = self.buckets[:]
+        old_capacity = self.capacity
+        self.capacity = new_capacity
+        self.buckets = [None] * new_capacity
+
+        for idx in range(0, old_capacity):
+            if old[idx] is not None:
+                cur_entry = old[idx]
+                self.put(cur_entry.key, cur_entry.value)
 
 
 
