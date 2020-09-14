@@ -1,6 +1,17 @@
 def word_count(s):
-    # Your code here
-
+    cache = {}
+    for w in s.split():
+        w = w.lower()
+        p = '":;,.+-=\//|{}[]()^*&'
+        for c in w:
+            if c in p:
+                w = w.replace(c, "")
+        if w in cache:
+            cache[w] += 1
+        elif w != '':
+            cache.update({w: 1})
+    print(f'Cache: {cache}')
+    return cache
 
 
 if __name__ == "__main__":
